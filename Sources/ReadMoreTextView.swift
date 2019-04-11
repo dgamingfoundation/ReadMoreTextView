@@ -198,7 +198,7 @@ public class ReadMoreTextView: UITextView {
     public override var intrinsicContentSize : CGSize {
         textContainer.size = CGSize(width: bounds.size.width, height: CGFloat.greatestFiniteMagnitude)
         var intrinsicContentSize = layoutManager.boundingRect(forGlyphRange: layoutManager.glyphRange(for: textContainer), in: textContainer).size
-        intrinsicContentSize.width = UIView.noIntrinsicMetric
+        intrinsicContentSize.width = UIViewNoIntrinsicMetric
         intrinsicContentSize.height += (textContainerInset.top + textContainerInset.bottom)
         intrinsicContentSize.height = ceil(intrinsicContentSize.height)
         return intrinsicContentSize
@@ -262,12 +262,15 @@ public class ReadMoreTextView: UITextView {
             textStorage.replaceCharacters(in: range, with: text)
         }
         
+        textAlignment = .left
         invalidateIntrinsicContentSize()
         invokeOnSizeChangeIfNeeded()
+        
+        NotificationCenter.default.post(name: NSNotification.Name.UITextViewTextDidChange, object: nil)
     }
     
     private func showMoreText() {
-        if let readLessText = readLessText, text.hasSuffix(readLessText) { return }
+        if text.isEmpty { return }
         
         shouldTrim = false
         textContainer.maximumNumberOfLines = 0
@@ -281,8 +284,11 @@ public class ReadMoreTextView: UITextView {
             textStorage.replaceCharacters(in: range, with: originalAttributedText)
         }
         
+        textAlignment = .left
         invalidateIntrinsicContentSize()
         invokeOnSizeChangeIfNeeded()
+        
+        NotificationCenter.default.post(name: NSNotification.Name.UITextViewTextDidChange, object: nil)
     }
     
     private func invokeOnSizeChangeIfNeeded() {
